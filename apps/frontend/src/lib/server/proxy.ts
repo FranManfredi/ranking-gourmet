@@ -33,6 +33,7 @@ function buildProxyResponseHeaders(upstreamResponse: Response) {
 
     if (
       lowerKey === "set-cookie" ||
+      lowerKey === "content-encoding" ||
       lowerKey === "content-length" ||
       lowerKey === "transfer-encoding" ||
       lowerKey === "connection"
