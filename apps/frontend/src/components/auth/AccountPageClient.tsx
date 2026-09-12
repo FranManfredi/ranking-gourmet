@@ -4,6 +4,7 @@ import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/src/lib/auth/client";
+import PasskeyManager from "@/src/components/auth/PasskeyManager";
 import {
   DEFAULT_SORT_MODE,
   getStoredDefaultSortMode,
@@ -148,34 +149,53 @@ export default function AccountPageClient() {
           </div>
         </section>
 
-        <section className="space-y-3 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-          <h2 className="text-lg font-black text-black">Cambio de contraseña</h2>
+        <PasskeyManager />
+
+        <section
+          aria-labelledby="password-heading"
+          className="space-y-3 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm"
+        >
+          <h2 id="password-heading" className="text-lg font-black text-black">
+            Cambio de contraseña
+          </h2>
 
           <form className="space-y-4" onSubmit={handlePasswordSubmit}>
-            <input
-              name="currentPassword"
-              type="password"
-              placeholder="Contraseña actual"
-              required
-              className="w-full rounded-2xl border border-gray-200 px-4 py-3 text-zinc-900 placeholder:text-zinc-500 outline-none focus:border-[#07BAB5]"
-            />
+            <div className="space-y-2">
+              <label htmlFor="currentPassword" className="text-sm font-bold text-zinc-800">
+                Contraseña actual
+              </label>
+              <input
+                id="currentPassword"
+                name="currentPassword"
+                type="password"
+                autoComplete="current-password"
+                required
+                className="w-full rounded-2xl border border-gray-200 px-4 py-3 text-zinc-900 outline-none focus:border-[#07BAB5] focus:ring-2 focus:ring-[#07BAB5]/20"
+              />
+            </div>
 
-            <input
-              name="newPassword"
-              type="password"
-              placeholder="Nueva contraseña"
-              required
-              className="w-full rounded-2xl border border-gray-200 px-4 py-3 text-zinc-900 placeholder:text-zinc-500 outline-none focus:border-[#07BAB5]"
-            />
+            <div className="space-y-2">
+              <label htmlFor="newPassword" className="text-sm font-bold text-zinc-800">
+                Nueva contraseña
+              </label>
+              <input
+                id="newPassword"
+                name="newPassword"
+                type="password"
+                autoComplete="new-password"
+                required
+                className="w-full rounded-2xl border border-gray-200 px-4 py-3 text-zinc-900 outline-none focus:border-[#07BAB5] focus:ring-2 focus:ring-[#07BAB5]/20"
+              />
+            </div>
 
             {passwordError && (
-              <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-900">
+              <p role="alert" className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-900">
                 {passwordError}
               </p>
             )}
 
             {passwordSuccess && (
-              <p className="rounded-2xl bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
+              <p role="status" className="rounded-2xl bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
                 {passwordSuccess}
               </p>
             )}
