@@ -42,7 +42,7 @@ export default function RestaurantTopBar({
         </div>
 
         <div className="ml-3 shrink-0">
-          <ScoreBadge score={score} showText={false} />
+          <ScoreBadge score={score} showText={true} label="PUNTAJE TOTAL" />
         </div>
       </div>
   );
