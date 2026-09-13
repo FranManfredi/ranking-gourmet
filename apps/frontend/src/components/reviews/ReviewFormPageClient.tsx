@@ -3,7 +3,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import RestaurantTopBar from "@/src/components/restaurants/RestaurantTopBar";
-import ReviewerFormCard, { ReviewerFormSection } from "@/src/components/card/ReviewerFormCard";
+import RatingFlow, { ReviewerFormSection } from "@/src/components/reviews/RatingFlow";
+import {
+  REVIEW_RATING_CATEGORIES,
+  type ReviewRatingId,
+} from "@/src/components/reviews/review-rating-config";
 import { ReviewerDTO, getAllReviewers } from "@/src/lib/reviewers/client";
 import { createReview, ReviewDTO, updateReview } from "@/src/lib/reviews/client";
 import { getVisitById, VisitWithDetailsDTO } from "@/src/lib/visits/client";
@@ -13,20 +17,8 @@ interface ReviewFormPageClientProps {
   currentUserId: string;
 }
 
-const REVIEW_SECTIONS = [
-  { id: "foodRating", title: "COMIDA", subtitle: "SABOR Y PRESENTACION" },
-  { id: "beverageRating", title: "BEBIDAS", subtitle: "CARTA Y COCTELERIA" },
-  { id: "serviceRating", title: "SERVICIO", subtitle: "ATENCION Y RAPIDEZ" },
-  { id: "valueRating", title: "VALOR PERCIBIDO", subtitle: "RELACION PRECIO/CALIDAD" },
-  { id: "ambianceRating", title: "AMBIENTE", subtitle: "CLIMA Y DECORACION" },
-] as const;
-
-function reviewerInitials(reviewer: ReviewerDTO) {
-  return `${reviewer.name[0] ?? ""}${reviewer.surname[0] ?? ""}`.toUpperCase() || "??";
-}
-
 function buildSections(review?: ReviewDTO | null): ReviewerFormSection[] {
-  return REVIEW_SECTIONS.map((section) => ({
+  return REVIEW_RATING_CATEGORIES.map((section) => ({
     id: section.id,
     title: section.title,
     subtitle: section.subtitle,
@@ -90,7 +82,7 @@ export default function ReviewFormPageClient({
     return sections.reduce((total, section) => total + section.score, 0) / sections.length;
   }, [sections]);
 
-  const handleSectionChange = (sectionId: string, value: number) => {
+  const handleSectionChange = (sectionId: ReviewRatingId, value: number) => {
     setSections((currentSections) =>
       currentSections.map((section) =>
         section.id === sectionId ? { ...section, score: value } : section
@@ -153,58 +145,33 @@ export default function ReviewFormPageClient({
   }
 
   return (
-    <main className="min-h-screen bg-white pb-10">
+    <main className="flex h-dvh flex-col overflow-hidden bg-white">
       <RestaurantTopBar
         name={visit.restaurant.name}
         address={visit.restaurant.address}
         city={visit.restaurant.city}
         score={averageScore}
+        scoreLabel="PUNTAJE TOTAL"
         backHref={`/visits/${visit.id}`}
       />
 
-      <div className="flex flex-col items-center gap-4 px-2 pt-4">
+      <div className="relative flex min-h-0 flex-1 flex-col items-center px-0 sm:p-4">
         {error && (
-          <div className="w-96">
+          <div className="absolute inset-x-0 top-2 z-50 mx-auto w-full max-w-lg px-4">
             <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-900">{error}</p>
           </div>
         )}
 
         {reviewer && (
-          <ReviewerFormCard
-            initials={reviewerInitials(reviewer)}
-            name={reviewer.name.toUpperCase()}
-            surname={reviewer.surname.toUpperCase()}
+          <RatingFlow
             sections={sections}
+            averageScore={averageScore ?? 5}
+            isSubmitting={isSubmitting}
+            isEditingExistingReview={Boolean(existingReview)}
             onSectionChange={handleSectionChange}
+            onSubmit={() => void handleSubmit()}
           />
         )}
-
-        <div className="inline-flex w-96 items-center justify-between gap-4">
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="inline-flex w-44 items-center justify-center gap-4 overflow-hidden rounded-2xl bg-[#F4FAFB] px-5 py-4 text-[#07BAB5] outline outline-1 outline-offset-[-1px] outline-[#CFEEED]"
-          >
-            <span className="w-24 text-center text-[10px] font-black tracking-wider">
-              CANCELAR
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => void handleSubmit()}
-            disabled={!reviewer || isSubmitting}
-            className="inline-flex w-44 items-center justify-center gap-4 overflow-hidden rounded-2xl bg-[#F4FAFB] px-5 py-4 text-[#07BAB5] outline outline-1 outline-offset-[-1px] outline-[#CFEEED] disabled:opacity-60"
-          >
-            <span className="w-24 text-center text-[10px] font-black tracking-wider">
-              {isSubmitting
-                ? "GUARDANDO..."
-                : existingReview
-                  ? "GUARDAR CAMBIOS"
-                  : "GUARDAR EVALUACION"}
-            </span>
-          </button>
-        </div>
       </div>
     </main>
   );

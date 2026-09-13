@@ -1,9 +1,11 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { admin } from "better-auth/plugins";
+import { passkey } from "@better-auth/passkey";
 import prisma from "../prisma.js";
 
-const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3001";
+const frontendUrl = (process.env.FRONTEND_URL || "http://localhost:3001").replace(/\/$/, "");
+const passkeyRpId = new URL(frontendUrl).hostname;
 
 export const auth = betterAuth({
     database: prismaAdapter(prisma, {
@@ -11,7 +13,19 @@ export const auth = betterAuth({
     }),
     
     plugins: [
-        admin()
+        admin(),
+        passkey({
+            rpID: passkeyRpId,
+            rpName: "Ranking Gourmet",
+            origin: frontendUrl,
+            registration: {
+                requireSession: true,
+            },
+            authenticatorSelection: {
+                residentKey: "required",
+                userVerification: "preferred",
+            },
+        })
     ],
 
     emailAndPassword:{
@@ -58,6 +72,6 @@ export const auth = betterAuth({
     trustedProxies: ["loopback", frontendUrl],
     trustedOrigins: [frontendUrl],
     rateLimit: {
-        enabled: false
+        enabled: true
     }
 });

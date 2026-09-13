@@ -7,6 +7,7 @@ La aplicación calcula un promedio por evaluación, por visita y por restaurante
 ## Funcionalidades
 
 - Inicio de sesión con email y contraseña.
+- Inicio de sesión passwordless con llaves de acceso (passkeys) creadas por usuarios ya autenticados.
 - Alta y administración de restaurantes, con dirección, ciudad y etiquetas.
 - Registro de visitas a cada restaurante.
 - Evaluaciones por comida, bebidas, servicio, valor percibido y ambiente.
@@ -37,6 +38,8 @@ ranking-gourmet/
 | Base de datos | PostgreSQL 16 | `5432` |
 
 El frontend utiliza rutas API internas como proxy hacia el backend. El backend protege los recursos de restaurantes, visitas, evaluadores y evaluaciones mediante sesiones de Better Auth.
+
+Las llaves de acceso se administran únicamente desde la página Cuenta. El login público permite usar una llave existente, pero no crear usuarios ni registrar nuevas llaves. En producción, `FRONTEND_URL` debe coincidir exactamente con el origen HTTPS público desde el que los usuarios abren la aplicación, porque WebAuthn vincula cada llave a ese dominio.
 
 ## Modelo de datos
 
@@ -204,4 +207,3 @@ La especificación OpenAPI puede consultarse en `/api-docs.json` y su interfaz S
 ## Despliegue
 
 El proyecto está preparado para desplegar frontend y backend como proyectos independientes de Vercel. La guía de configuración, variables de entorno y despliegue por tags se encuentra en [`infrastructure/vercel.md`](infrastructure/vercel.md).
-
