@@ -85,7 +85,7 @@ export default function RatingStep({
     <section
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-      className="flex min-h-[calc(100dvh-11rem)] w-full flex-col items-center px-5 pb-5 pt-6"
+      className="flex h-full min-h-0 w-full flex-col items-center overflow-hidden px-5 pb-3 pt-4"
       aria-labelledby={`rating-title-${category.id}`}
     >
       <RatingProgress
@@ -94,17 +94,17 @@ export default function RatingStep({
         categoryColor={category.color}
       />
 
-      <div className="mt-7 flex flex-col items-center text-center">
+      <div className="mt-4 flex flex-col items-center text-center">
         <div
-          className="flex h-16 w-16 items-center justify-center rounded-2xl"
+          className="flex h-14 w-14 items-center justify-center rounded-2xl"
           style={{ backgroundColor: category.softColor, color: category.textColor }}
         >
-          <CategoryIcon className="h-8 w-8" strokeWidth={2.25} aria-hidden="true" />
+          <CategoryIcon className="h-7 w-7" strokeWidth={2.25} aria-hidden="true" />
         </div>
 
         <p
           id={`rating-title-${category.id}`}
-          className="mt-4 text-sm font-black tracking-[0.16em]"
+          className="mt-3 text-base font-black tracking-[0.16em]"
           style={{ color: category.textColor }}
         >
           {category.title}
@@ -112,12 +112,12 @@ export default function RatingStep({
         <p className="mt-1 text-[11px] font-semibold tracking-wide text-slate-400">
           {category.subtitle}
         </p>
-        <h1 className="mt-4 text-balance text-2xl font-bold text-slate-950">
+        <h1 className="mt-3 text-balance text-2xl font-bold text-slate-950">
           {category.question}
         </h1>
       </div>
 
-      <div className="mt-5 flex w-full flex-col items-center">
+      <div className="mt-4 flex w-full flex-col items-center">
         <RatingWheel
           min={1}
           max={10}
@@ -130,7 +130,7 @@ export default function RatingStep({
         />
 
         <p
-          className="mt-4 min-h-7 text-lg font-black"
+          className="mt-3 min-h-7 text-xl font-black"
           style={{ color: scorePalette.label }}
           aria-live="polite"
         >
@@ -138,7 +138,7 @@ export default function RatingStep({
         </p>
       </div>
 
-      <div className="mt-auto w-full max-w-md pt-8">
+      <div className="mt-auto w-full max-w-md pt-3">
         {canReturnToSummary && (
           <button
             type="button"
@@ -156,7 +156,7 @@ export default function RatingStep({
             type="button"
             onClick={onPrevious}
             disabled={isFirst}
-            className="flex min-h-14 items-center justify-center gap-2 rounded-2xl border-2 bg-white px-4 text-sm font-black transition-transform active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-35"
+            className="flex min-h-13 items-center justify-center gap-2 rounded-2xl border-2 bg-white px-4 text-sm font-black transition-transform active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-35"
             style={{ borderColor: category.softColor, color: category.textColor }}
             aria-label="Categoría anterior"
           >
@@ -167,7 +167,7 @@ export default function RatingStep({
           <button
             type="button"
             onClick={onNext}
-            className="flex min-h-14 items-center justify-center gap-2 rounded-2xl px-4 text-sm font-black text-white shadow-lg transition-transform active:scale-[0.98]"
+            className="flex min-h-13 items-center justify-center gap-2 rounded-2xl px-4 text-sm font-black text-white shadow-lg transition-transform active:scale-[0.98]"
             style={{ backgroundColor: category.textColor, boxShadow: `0 12px 28px ${category.color}33` }}
             aria-label={isLast ? "Ver resumen de puntuaciones" : "Siguiente categoría"}
           >

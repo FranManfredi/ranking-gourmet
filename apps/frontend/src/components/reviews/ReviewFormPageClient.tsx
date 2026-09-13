@@ -17,10 +17,6 @@ interface ReviewFormPageClientProps {
   currentUserId: string;
 }
 
-function reviewerInitials(reviewer: ReviewerDTO) {
-  return `${reviewer.name[0] ?? ""}${reviewer.surname[0] ?? ""}`.toUpperCase() || "??";
-}
-
 function buildSections(review?: ReviewDTO | null): ReviewerFormSection[] {
   return REVIEW_RATING_CATEGORIES.map((section) => ({
     id: section.id,
@@ -149,33 +145,31 @@ export default function ReviewFormPageClient({
   }
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="flex h-dvh flex-col overflow-hidden bg-white">
       <RestaurantTopBar
         name={visit.restaurant.name}
         address={visit.restaurant.address}
         city={visit.restaurant.city}
         score={averageScore}
+        scoreLabel="PUNTAJE TOTAL"
         backHref={`/visits/${visit.id}`}
       />
 
-      <div className="flex flex-col items-center px-0 pt-4 sm:px-4 sm:pb-10">
+      <div className="relative flex min-h-0 flex-1 flex-col items-center px-0 sm:p-4">
         {error && (
-          <div className="mb-4 w-full max-w-lg px-4 sm:px-0">
+          <div className="absolute inset-x-0 top-2 z-50 mx-auto w-full max-w-lg px-4">
             <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-900">{error}</p>
           </div>
         )}
 
         {reviewer && (
           <RatingFlow
-            initials={reviewerInitials(reviewer)}
-            reviewerName={`${reviewer.name} ${reviewer.surname}`.toUpperCase()}
             sections={sections}
             averageScore={averageScore ?? 5}
             isSubmitting={isSubmitting}
             isEditingExistingReview={Boolean(existingReview)}
             onSectionChange={handleSectionChange}
             onSubmit={() => void handleSubmit()}
-            onCancel={() => router.back()}
           />
         )}
       </div>

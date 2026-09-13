@@ -17,27 +17,21 @@ export interface ReviewerFormSection {
 }
 
 interface RatingFlowProps {
-  initials: string;
-  reviewerName: string;
   sections: ReviewerFormSection[];
   averageScore: number;
   isSubmitting: boolean;
   isEditingExistingReview: boolean;
   onSectionChange: (sectionId: ReviewRatingId, value: number) => void;
   onSubmit: () => void;
-  onCancel: () => void;
 }
 
 export default function RatingFlow({
-  initials,
-  reviewerName,
   sections,
   averageScore,
   isSubmitting,
   isEditingExistingReview,
   onSectionChange,
   onSubmit,
-  onCancel,
 }: RatingFlowProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [showSummary, setShowSummary] = useState(false);
@@ -78,38 +72,23 @@ export default function RatingFlow({
   };
 
   return (
-    <div className="w-full max-w-lg overflow-hidden rounded-t-[2rem] bg-slate-50 sm:rounded-[2rem] sm:border sm:border-[#CFEEED] sm:shadow-[0_24px_70px_rgba(15,23,42,0.08)]">
-      <div className="flex items-center gap-3 border-b border-slate-200 bg-white px-5 py-3">
-        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#07BAB5] text-sm font-black text-white">
-          {initials}
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block text-[10px] font-bold tracking-[0.14em] text-slate-400">EVALUADOR</span>
-          <span className="block truncate text-sm font-black text-slate-900">{reviewerName}</span>
-        </span>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="min-h-11 rounded-xl px-3 text-xs font-black text-[#087A77]"
-        >
-          Cancelar
-        </button>
-      </div>
-
+    <div className="flex h-full min-h-0 w-full max-w-lg flex-col overflow-hidden bg-slate-50 sm:rounded-[2rem] sm:border sm:border-[#CFEEED] sm:shadow-[0_24px_70px_rgba(15,23,42,0.08)]">
       {showSummary ? (
-        <RatingSummary
-          categories={REVIEW_RATING_CATEGORIES}
-          sections={sections}
-          averageScore={averageScore}
-          isSubmitting={isSubmitting}
-          isEditingExistingReview={isEditingExistingReview}
-          onEdit={handleEdit}
-          onPublish={onSubmit}
-        />
+        <div className="min-h-0 flex-1">
+          <RatingSummary
+            categories={REVIEW_RATING_CATEGORIES}
+            sections={sections}
+            averageScore={averageScore}
+            isSubmitting={isSubmitting}
+            isEditingExistingReview={isEditingExistingReview}
+            onEdit={handleEdit}
+            onPublish={onSubmit}
+          />
+        </div>
       ) : (
         <div
           key={category.id}
-          className={direction === "forward" ? styles.stepForward : styles.stepBackward}
+          className={`min-h-0 flex-1 ${direction === "forward" ? styles.stepForward : styles.stepBackward}`}
         >
           <RatingStep
             category={category}

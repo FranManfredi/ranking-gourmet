@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import styles from "./RatingFlow.module.css";
 
 interface RatingWheelProps {
@@ -14,7 +14,7 @@ interface RatingWheelProps {
   surfaceColor: string;
 }
 
-const ITEM_HEIGHT = 56;
+const ITEM_HEIGHT = 48;
 const VISIBLE_ITEMS = 5;
 const SNAP_DELAY_MS = 100;
 
@@ -34,26 +34,32 @@ export default function RatingWheel({
 }: RatingWheelProps) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const snapTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isUserScrollingRef = useRef(false);
+  const scrollGeneratedValueRef = useRef<number | null>(null);
   const values = useMemo(
     () =>
       Array.from(
         { length: Math.floor((max - min) / step) + 1 },
-        (_, index) => min + index * step
+        (_, index) => max - index * step
       ),
     [max, min, step]
   );
-  const selectedIndex = clamp(Math.round((value - min) / step), 0, values.length - 1);
+  const selectedIndex = clamp(Math.round((max - value) / step), 0, values.length - 1);
+  const interactiveIndexRef = useRef(selectedIndex);
 
   const scrollToIndex = useCallback((index: number, behavior: ScrollBehavior) => {
     scrollerRef.current?.scrollTo({ top: index * ITEM_HEIGHT, behavior });
   }, []);
 
-  useEffect(() => {
-    if (!isUserScrollingRef.current) {
-      scrollToIndex(selectedIndex, "auto");
+  useLayoutEffect(() => {
+    interactiveIndexRef.current = selectedIndex;
+
+    if (scrollGeneratedValueRef.current === value) {
+      scrollGeneratedValueRef.current = null;
+      return;
     }
-  }, [scrollToIndex, selectedIndex]);
+
+    scrollToIndex(selectedIndex, "auto");
+  }, [scrollToIndex, selectedIndex, value]);
 
   useEffect(
     () => () => {
@@ -64,10 +70,9 @@ export default function RatingWheel({
     []
   );
 
-  const selectIndex = (index: number, behavior: ScrollBehavior = "smooth") => {
+  const selectIndex = (index: number, behavior: ScrollBehavior = "auto") => {
     const nextIndex = clamp(index, 0, values.length - 1);
-    isUserScrollingRef.current = false;
-    onChange(values[nextIndex]);
+    interactiveIndexRef.current = nextIndex;
     scrollToIndex(nextIndex, behavior);
   };
 
@@ -75,11 +80,12 @@ export default function RatingWheel({
     const scroller = scrollerRef.current;
     if (!scroller) return;
 
-    isUserScrollingRef.current = true;
     const nextIndex = clamp(Math.round(scroller.scrollTop / ITEM_HEIGHT), 0, values.length - 1);
     const nextValue = values[nextIndex];
+    interactiveIndexRef.current = nextIndex;
 
     if (nextValue !== value) {
+      scrollGeneratedValueRef.current = nextValue;
       onChange(nextValue);
     }
 
@@ -88,18 +94,18 @@ export default function RatingWheel({
     }
 
     snapTimeoutRef.current = setTimeout(() => {
-      isUserScrollingRef.current = false;
       scrollToIndex(nextIndex, "smooth");
     }, SNAP_DELAY_MS);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     let nextIndex: number | null = null;
+    const interactiveIndex = interactiveIndexRef.current;
 
-    if (event.key === "ArrowUp" || event.key === "ArrowRight") nextIndex = selectedIndex + 1;
-    if (event.key === "ArrowDown" || event.key === "ArrowLeft") nextIndex = selectedIndex - 1;
-    if (event.key === "Home") nextIndex = 0;
-    if (event.key === "End") nextIndex = values.length - 1;
+    if (event.key === "ArrowUp" || event.key === "ArrowRight") nextIndex = interactiveIndex - 1;
+    if (event.key === "ArrowDown" || event.key === "ArrowLeft") nextIndex = interactiveIndex + 1;
+    if (event.key === "Home") nextIndex = values.length - 1;
+    if (event.key === "End") nextIndex = 0;
 
     if (nextIndex === null) return;
 
@@ -121,12 +127,17 @@ export default function RatingWheel({
       aria-valuetext={`${value} de ${max}`}
       aria-orientation="vertical"
       onKeyDown={handleKeyDown}
-      className="relative w-full max-w-[17rem] rounded-[2rem] bg-white outline-none ring-offset-4 focus-visible:ring-2"
+      onPointerDown={() => {
+        if (snapTimeoutRef.current) {
+          clearTimeout(snapTimeoutRef.current);
+        }
+      }}
+      className="relative w-full max-w-[18rem] rounded-[2rem] bg-white outline-none ring-offset-4 focus-visible:ring-2"
       style={{ boxShadow: `0 18px 50px ${color}1F`, outlineColor: color }}
     >
       <div
-        className="pointer-events-none absolute inset-x-4 top-1/2 z-10 h-14 -translate-y-1/2 rounded-xl border-y-2"
-        style={{ borderColor: color, backgroundColor: surfaceColor }}
+        className="pointer-events-none absolute inset-x-4 top-1/2 z-10 -translate-y-1/2 rounded-xl border-y-2"
+        style={{ height: ITEM_HEIGHT, borderColor: color, backgroundColor: surfaceColor }}
         aria-hidden="true"
       />
 
@@ -149,8 +160,9 @@ export default function RatingWheel({
               style={{
                 height: ITEM_HEIGHT,
                 color: isSelected ? color : "#475569",
-                fontSize: isSelected ? 42 : distance === 1 ? 26 : 20,
+                fontSize: isSelected ? 44 : distance === 1 ? 28 : 21,
                 fontWeight: isSelected ? 900 : 700,
+                lineHeight: 1,
                 opacity: isSelected ? 1 : distance === 1 ? 0.42 : 0.18,
               }}
             >

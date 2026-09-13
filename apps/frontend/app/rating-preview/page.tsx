@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import RestaurantTopBar from "@/src/components/restaurants/RestaurantTopBar";
 import RatingFlow, {
   type ReviewerFormSection,
 } from "@/src/components/reviews/RatingFlow";
@@ -21,11 +22,17 @@ export default function RatingPreviewPage() {
   );
 
   return (
-    <main className="min-h-screen bg-white pt-4 sm:px-4">
-      <div className="mx-auto flex max-w-lg flex-col items-center">
+    <main className="flex h-dvh flex-col overflow-hidden bg-white">
+      <RestaurantTopBar
+        name="Restaurante de prueba"
+        address="Av. Gourmet 123"
+        city="Buenos Aires"
+        score={averageScore}
+        scoreLabel="PUNTAJE TOTAL"
+        backHref="/"
+      />
+      <div className="mx-auto flex min-h-0 w-full max-w-lg flex-1 flex-col items-center">
         <RatingFlow
-          initials="FM"
-          reviewerName="FRANCISCO MANFREDI"
           sections={sections}
           averageScore={averageScore}
           isSubmitting={false}
@@ -38,7 +45,6 @@ export default function RatingPreviewPage() {
             )
           }
           onSubmit={() => undefined}
-          onCancel={() => undefined}
         />
       </div>
     </main>
