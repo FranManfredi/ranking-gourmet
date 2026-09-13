@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import ScoreBadge, { getScoreLabel, getScoreStyles } from "@/src/components/score/ScoreBadge";
+import { getRatingSemanticLabel } from "@/src/components/reviews/review-rating-config";
 import { BadgeDollarSign, ChevronDown, MapPin, Martini, Pencil, Utensils, ConciergeBell } from "lucide-react";
 
 type ReviewerCardVariant = "open" | "close";
@@ -24,26 +25,6 @@ interface ReviewerCardProps {
     className?: string;
 }
 
-function getSectionStatusLabel(title: string, score?: number | null) {
-    if (!score || score < 1 || score > 10) {
-        return `${title} SIN DATOS`;
-    }
-
-    if (score <= 3) {
-        return `${title} BAJO`;
-    }
-
-    if (score <= 6) {
-        return `${title} CORRECTO`;
-    }
-
-    if (score <= 8) {
-        return `${title} MUY BUENO`;
-    }
-
-    return `${title} DESTACADO`;
-}
-
 function SectionIcon({ sectionId }: { sectionId: string }) {
     if (sectionId === "foodRating") {
         return <Utensils className="h-5 w-5 text-[#07BAB5]" aria-hidden="true" />;
@@ -66,7 +47,7 @@ function SectionIcon({ sectionId }: { sectionId: string }) {
 
 function ReviewerSectionRow({ section }: { section: ReviewerCardSection }) {
     const styles = getScoreStyles(section.score);
-    const label = section.statusLabel?.trim() || getSectionStatusLabel(section.title, section.score);
+    const label = section.statusLabel?.trim() || getRatingSemanticLabel(section.id, section.score);
 
     return (
         <div className="inline-flex self-stretch items-center justify-between">

@@ -1,0 +1,48 @@
+.wheel {
+  scrollbar-width: none;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+
+.wheel::-webkit-scrollbar {
+  display: none;
+}
+
+.stepForward {
+  animation: step-forward 180ms ease-out both;
+}
+
+.stepBackward {
+  animation: step-backward 180ms ease-out both;
+}
+
+@keyframes step-forward {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes step-backward {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stepForward,
+  .stepBackward {
+    animation: none;
+  }
+}

@@ -7,6 +7,58 @@ interface ScoreBadgeProps {
     className?: string;
 }
 
+export interface ScorePalette {
+    accent: string;
+    foreground: string;
+    label: string;
+    surface: string;
+}
+
+export function getScorePalette(score?: number | null): ScorePalette {
+    if (!score || score < 1 || score > 10) {
+        return {
+            accent: "#9CA3AF",
+            foreground: "#9CA3AF",
+            label: "#64748B",
+            surface: "#F3F4F6",
+        };
+    }
+
+    if (score <= 3) {
+        return {
+            accent: "#FF0000",
+            foreground: "#FFFFFF",
+            label: "#FF0000",
+            surface: "#FFDFDF",
+        };
+    }
+
+    if (score <= 6) {
+        return {
+            accent: "#FFBF1E",
+            foreground: "#644300",
+            label: "#644300",
+            surface: "#FFF7D6",
+        };
+    }
+
+    if (score <= 8) {
+        return {
+            accent: "#9DE000",
+            foreground: "#006403",
+            label: "#006403",
+            surface: "#F1FBCF",
+        };
+    }
+
+    return {
+        accent: "#22C55D",
+        foreground: "#FFFFFF",
+        label: "#15803D",
+        surface: "#DCFCE7",
+    };
+}
+
 export function getScoreStyles(score?: number | null) {
     if (!score || score < 1 || score > 10) {
         return {
@@ -57,15 +109,15 @@ export function getScoreLabel(score: number | null | undefined) : string {
         return "SIN DATOS";
     }
     if (score <= 3) {
-        return "DECEPCIONANTE";
+        return "Olvidable";
     }
     if (score <= 6) {
-        return "MEJORABLE";
+        return "Mejorable";
     }
     if (score <= 8) {
-        return "RECOMENDABLE";
+        return "Recomendable";
     }
-    return "GOURMET";
+    return "Gourmet";
 }
 
 export default function ScoreBadge({

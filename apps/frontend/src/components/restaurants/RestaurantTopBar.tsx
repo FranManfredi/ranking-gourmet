@@ -9,6 +9,7 @@ interface RestaurantTopBarProps {
   address: string;
   city: string;
   score?: number | null;
+  scoreLabel?: string;
   backHref: string;
 }
 
@@ -17,12 +18,13 @@ export default function RestaurantTopBar({
                                            address,
                                            city,
                                            score,
+                                           scoreLabel,
                                            backHref,
                                          }: RestaurantTopBarProps) {
   const router = useRouter();
 
   return (
-      <div className="inline-flex w-full items-center justify-between overflow-hidden border-b border-[#ECFDF5] bg-white px-4 py-3">
+      <div className="inline-flex w-full shrink-0 items-center justify-between overflow-hidden border-b border-[#ECFDF5] bg-white px-4 py-3">
         <div className="flex min-w-0 flex-1 items-center gap-3">
             <SmallButton
                 onClick={() => router.push(backHref)}
@@ -41,7 +43,19 @@ export default function RestaurantTopBar({
           </div>
         </div>
 
-        <div className="ml-3 shrink-0">
+        <div className="ml-3 flex shrink-0 items-center gap-2">
+          {scoreLabel && (
+            <span
+              className="text-right text-[9px] font-black leading-tight tracking-wide text-[#087A77]"
+              aria-label={scoreLabel}
+            >
+              {scoreLabel.split(" ").map((word) => (
+                <span key={word} className="block" aria-hidden="true">
+                  {word}
+                </span>
+              ))}
+            </span>
+          )}
           <ScoreBadge score={score} showText={false} />
         </div>
       </div>
