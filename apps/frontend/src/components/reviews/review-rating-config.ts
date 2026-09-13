@@ -80,13 +80,55 @@ export const REVIEW_RATING_CATEGORIES: readonly ReviewRatingCategory[] = [
   },
 ] as const;
 
-export function getRatingSemanticLabel(value: number) {
-  if (value <= 2) return "Muy malo";
-  if (value <= 4) return "Malo";
-  if (value === 5) return "Regular";
-  if (value === 6) return "Aceptable";
-  if (value === 7) return "Bueno";
-  if (value === 8) return "Muy bueno";
-  if (value === 9) return "Excelente";
-  return "Excepcional";
+type RatingBand = "low" | "regular" | "good" | "excellent";
+
+const CATEGORY_RATING_LABELS: Record<ReviewRatingId, Record<RatingBand, string>> = {
+  foodRating: {
+    low: "Incomible",
+    regular: "Decepcionante",
+    good: "Sabrosa",
+    excellent: "Memorable",
+  },
+  beverageRating: {
+    low: "Escasa",
+    regular: "Limitada",
+    good: "Variada",
+    excellent: "Amplia",
+  },
+  serviceRating: {
+    low: "Deficiente",
+    regular: "Descuidado",
+    good: "Adecuado",
+    excellent: "Impecable",
+  },
+  valueRating: {
+    low: "Muy caro",
+    regular: "Caro",
+    good: "Razonable",
+    excellent: "Conveniente",
+  },
+  ambianceRating: {
+    low: "Desagradable",
+    regular: "Incómodo",
+    good: "Agradable",
+    excellent: "Atractivo",
+  },
+};
+
+function getRatingBand(value: number): RatingBand {
+  if (value <= 3) return "low";
+  if (value <= 6) return "regular";
+  if (value <= 8) return "good";
+  return "excellent";
+}
+
+export function getRatingSemanticLabel(
+  categoryId: string,
+  value?: number | null
+) {
+  if (!value || value < 1 || value > 10 || !(categoryId in CATEGORY_RATING_LABELS)) {
+    return "Sin datos";
+  }
+
+  return CATEGORY_RATING_LABELS[categoryId as ReviewRatingId][getRatingBand(value)];
 }

@@ -109,15 +109,15 @@ export function getScoreLabel(score: number | null | undefined) : string {
         return "SIN DATOS";
     }
     if (score <= 3) {
-        return "DECEPCIONANTE";
+        return "Olvidable";
     }
     if (score <= 6) {
-        return "MEJORABLE";
+        return "Mejorable";
     }
     if (score <= 8) {
-        return "RECOMENDABLE";
+        return "Recomendable";
     }
-    return "GOURMET";
+    return "Gourmet";
 }
 
 export default function ScoreBadge({

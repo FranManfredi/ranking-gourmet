@@ -134,7 +134,7 @@ export default function RatingStep({
           style={{ color: scorePalette.label }}
           aria-live="polite"
         >
-          {getRatingSemanticLabel(value)}
+          {getRatingSemanticLabel(category.id, value)}
         </p>
       </div>
 

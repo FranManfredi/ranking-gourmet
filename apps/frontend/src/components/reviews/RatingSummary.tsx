@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronRight, Pencil } from "lucide-react";
+import { getScoreLabel, getScorePalette } from "@/src/components/score/ScoreBadge";
 import type { ReviewerFormSection } from "./RatingFlow";
 import type { ReviewRatingCategory, ReviewRatingId } from "./review-rating-config";
 
@@ -23,6 +24,8 @@ export default function RatingSummary({
   onEdit,
   onPublish,
 }: RatingSummaryProps) {
+  const totalPalette = getScorePalette(averageScore);
+
   return (
     <section className="flex h-full min-h-0 w-full flex-col overflow-hidden px-5 py-3" aria-labelledby="rating-summary-title">
       <div className="text-center">
@@ -37,7 +40,10 @@ export default function RatingSummary({
           </span>
           <span className="text-base font-bold text-slate-400">/ 10</span>
         </div>
-        <p className="mt-1 text-xs text-slate-500">Revisá los valores antes de publicar.</p>
+        <p className="mt-2 text-xl font-black leading-none" style={{ color: totalPalette.label }}>
+          {getScoreLabel(averageScore)}
+        </p>
+        <p className="mt-2 text-xs text-slate-500">Revisá los valores antes de publicar.</p>
       </div>
 
       <div className="mt-3 overflow-hidden rounded-2xl border border-[#CFEEED] bg-white shadow-[0_12px_36px_rgba(15,23,42,0.06)]">
