@@ -20,7 +20,7 @@ services:
     build:
       context: ./apps/backend
     ports:
-      - "${PORT}:${PORT}"
+      - "8080:8080"
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       PORT: ${PORT}
@@ -53,7 +53,7 @@ services:
       NEXT_PUBLIC_BACKEND_API_URL: ${NEXT_PUBLIC_BACKEND_API_URL}
       NODE_OPTIONS: --max-old-space-size=768
     ports:
-      - "8080:3000"
+      - "3000:3000"
 
 volumes:
   postgres_data:
