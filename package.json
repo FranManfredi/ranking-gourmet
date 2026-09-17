@@ -2,7 +2,7 @@
   "name": "ranking-gourmet",
   "private": true,
   "scripts": {
-    "dev": "npm run backend:dev",
+    "dev": "npm run backend:dev & npm run frontend:dev",
     "build": "npm run backend:build",
     "start": "npm run backend:start",
     "backend:dev": "npm --prefix apps/backend run dev",

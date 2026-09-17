@@ -33,8 +33,8 @@ ranking-gourmet/
 
 | Componente | Tecnologías | Puerto local |
 | --- | --- | --- |
-| Frontend | Next.js 16, React 19, TypeScript, Tailwind CSS | `8080` con Docker / `3001` manual |
-| Backend | Node.js, Express 5, TypeScript, Better Auth, Prisma | `3000` |
+| Frontend | Next.js 16, React 19, TypeScript, Tailwind CSS | `3000` |
+| Backend | Node.js, Express 5, TypeScript, Better Auth, Prisma | `8080` |
 | Base de datos | PostgreSQL 16 | `5432` |
 
 El frontend utiliza rutas API internas como proxy hacia el backend. El backend protege los recursos de restaurantes, visitas, evaluadores y evaluaciones mediante sesiones de Better Auth.
@@ -63,21 +63,17 @@ Para desarrollo manual:
 
 ## Inicio rápido con Docker
 
-1. Crear un archivo `.env` en la raíz:
+1. Configurar en el archivo `.env` de la raíz las credenciales compartidas. La
+   `DATABASE_URL` de este archivo es deliberadamente local; Compose la reemplaza
+   dentro del container backend por una URL con hostname `db`:
 
 ```dotenv
-PORT=3000
 POSTGRES_USER=ranking_gourmet
 POSTGRES_PASSWORD=change-me
 POSTGRES_DB=ranking_gourmet
+DATABASE_URL=postgresql://ranking_gourmet:change-me@localhost:5432/ranking_gourmet?schema=public
 
 BETTER_AUTH_SECRET=replace-with-at-least-32-random-characters
-BETTER_AUTH_BASE_URL=http://localhost:3000
-FRONTEND_URL=http://localhost:8080
-
-BACKEND_API_URL=http://backend:3000
-BETTER_AUTH_BACKEND_URL=http://backend:3000/api/auth
-NEXT_PUBLIC_BACKEND_API_URL=http://localhost:3000
 
 INITIAL_USER_EMAIL=admin@example.com
 INITIAL_USER_PASSWORD=replace-with-a-strong-password
@@ -108,9 +104,9 @@ docker compose up -d
 
 4. Abrir:
 
-- Aplicación: [http://localhost:8080](http://localhost:8080)
-- API: [http://localhost:3000](http://localhost:3000)
-- Swagger: [http://localhost:3000/api-docs](http://localhost:3000/api-docs)
+- Aplicación: [http://localhost:3000](http://localhost:3000)
+- API: [http://localhost:8080](http://localhost:8080)
+- Swagger: [http://localhost:8080/api-docs](http://localhost:8080/api-docs)
 
 Para detener los servicios:
 
@@ -135,49 +131,43 @@ npm --prefix apps/frontend ci
 docker compose up -d db
 ```
 
-3. Crear `apps/backend/.env`:
+3. Configurar `.env.local` en la raíz para el backend. Sus scripts lo cargan
+   automáticamente sobre las credenciales de `.env`:
 
 ```dotenv
-PORT=3000
+PORT=8080
 NODE_ENV=development
-DATABASE_URL=postgresql://ranking_gourmet:change-me@localhost:5432/ranking_gourmet
-BETTER_AUTH_SECRET=replace-with-at-least-32-random-characters
-BETTER_AUTH_BASE_URL=http://localhost:3000
-FRONTEND_URL=http://localhost:3001
-
-INITIAL_USER_EMAIL=admin@example.com
-INITIAL_USER_PASSWORD=replace-with-a-strong-password
-INITIAL_USER_NAME=Admin
-INITIAL_USER_SURNAME=User
-INITIAL_USER_ROLE=admin
+BETTER_AUTH_BASE_URL=http://localhost:8080
+FRONTEND_URL=http://localhost:3000
+PUBLIC_API_URL=http://localhost:8080
 ```
 
-4. Crear `apps/frontend/.env.local`:
+   Configurar `apps/frontend/.env.local` para Next.js:
 
 ```dotenv
-BACKEND_API_URL=http://localhost:3000
-BETTER_AUTH_BACKEND_URL=http://localhost:3000/api/auth
-NEXT_PUBLIC_APP_URL=http://localhost:3001
+BACKEND_API_URL=http://localhost:8080
+BETTER_AUTH_BACKEND_URL=http://localhost:8080/api/auth
+NEXT_PUBLIC_APP_URL=http://localhost:3000
 NEXT_PUBLIC_AUTH_URL=/api/auth
 ```
 
-5. Aplicar las migraciones:
+   `DATABASE_URL` permanece en `.env` y debe usar siempre
+   `localhost:5432` para este escenario.
+
+4. Aplicar las migraciones:
 
 ```bash
 npm --prefix apps/backend run db:migrate:deploy
 ```
 
-6. Iniciar backend y frontend en terminales separadas:
+5. Iniciar ambos servicios:
 
 ```bash
-npm run backend:dev
+npm run dev
 ```
 
-```bash
-npm --prefix apps/frontend run dev -- -p 3001
-```
-
-La aplicación estará disponible en [http://localhost:3001](http://localhost:3001).
+El frontend estará disponible en [http://localhost:3000](http://localhost:3000)
+y el backend en [http://localhost:8080](http://localhost:8080).
 
 ## Scripts principales
 
