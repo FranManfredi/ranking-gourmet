@@ -12,7 +12,8 @@ services:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 5s
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -22,12 +23,13 @@ services:
     ports:
       - "8080:8080"
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-      PORT: ${PORT}
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
+      PORT: 8080
       NODE_ENV: production
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
-      BETTER_AUTH_BASE_URL: ${BETTER_AUTH_BASE_URL}
-      FRONTEND_URL: ${FRONTEND_URL}
+      BETTER_AUTH_BASE_URL: http://localhost:8080
+      FRONTEND_URL: http://localhost:3000
+      PUBLIC_API_URL: http://localhost:8080
       INITIAL_USER_EMAIL: ${INITIAL_USER_EMAIL:-}
       INITIAL_USER_PASSWORD: ${INITIAL_USER_PASSWORD:-}
       INITIAL_USER_NAME: ${INITIAL_USER_NAME:-Admin}
@@ -36,21 +38,32 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8080/').then((response) => { if (!response.ok) process.exit(1) }).catch(() => process.exit(1))"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     restart: on-failure
 
   frontend:
     platform: linux/amd64
     build:
       context: ./apps/frontend
+      args:
+        NEXT_PUBLIC_APP_URL: http://localhost:3000
+        NEXT_PUBLIC_AUTH_URL: /api/auth
     container_name: ranking-gourmet-frontend
     restart: unless-stopped
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     environment:
       NODE_ENV: production
-      BACKEND_API_URL: ${BACKEND_API_URL}
-      BETTER_AUTH_BACKEND_URL: ${BETTER_AUTH_BACKEND_URL}
-      NEXT_PUBLIC_BACKEND_API_URL: ${NEXT_PUBLIC_BACKEND_API_URL}
+      BACKEND_API_URL: http://backend:8080
+      BETTER_AUTH_BACKEND_URL: http://backend:8080/api/auth
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      NEXT_PUBLIC_AUTH_URL: /api/auth
       NODE_OPTIONS: --max-old-space-size=768
     ports:
       - "3000:3000"

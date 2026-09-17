@@ -2,13 +2,14 @@ import "dotenv/config";
 import app from "./app.js";
 import { createInitialUser } from "./lib/auth/initial-user.js";
 
-const PORT = process.env.PORT || 3000;
+const port = Number.parseInt(process.env.PORT ?? "8080", 10);
+const host = process.env.HOST ?? "0.0.0.0";
 
 async function startServer() {
   await createInitialUser();
 
-  app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+  app.listen(port, host, () => {
+    console.log(`Server is listening on http://${host}:${port}`);
   });
 }
 

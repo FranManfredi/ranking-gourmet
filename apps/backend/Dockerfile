@@ -38,7 +38,7 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 
-EXPOSE 3000
+EXPOSE 8080
 
 # Usar node directamente en lugar de npm para capturar mejor los logs y señales de terminal
 CMD ["node", "dist/src/server.js"]

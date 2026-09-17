@@ -8,7 +8,7 @@ function getRequestOrigin(request: NextRequest) {
   const host = forwardedHost ?? request.headers.get("host");
 
   if (!host) {
-    return "http://localhost:3001";
+    return "http://localhost:3000";
   }
 
   return `${forwardedProto ?? "http"}://${host}`;

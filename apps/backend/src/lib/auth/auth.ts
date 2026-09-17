@@ -4,7 +4,7 @@ import { admin } from "better-auth/plugins";
 import { passkey } from "@better-auth/passkey";
 import prisma from "../prisma.js";
 
-const frontendUrl = (process.env.FRONTEND_URL || "http://localhost:3001").replace(/\/$/, "");
+const frontendUrl = (process.env.FRONTEND_URL || "http://localhost:3000").replace(/\/$/, "");
 const passkeyRpId = new URL(frontendUrl).hostname;
 
 export const auth = betterAuth({
@@ -66,7 +66,7 @@ export const auth = betterAuth({
 
     secret: process.env.BETTER_AUTH_SECRET,
 
-    baseURL: process.env.BETTER_AUTH_BASE_URL || "http://localhost:3000",
+    baseURL: process.env.BETTER_AUTH_BASE_URL || "http://localhost:8080",
     
     trustHost: true,
     trustedProxies: ["loopback", frontendUrl],

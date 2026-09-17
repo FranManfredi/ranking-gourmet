@@ -6,10 +6,10 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon",
-    "build": "prisma generate && tsc",
+    "build": "node --env-file-if-exists=../../.env --env-file-if-exists=../../.env.local node_modules/prisma/build/index.js generate && tsc",
     "vercel-build": "prisma generate && prisma migrate deploy && tsc",
-    "start": "node dist/src/server.js",
-    "db:migrate:deploy": "prisma migrate deploy",
+    "start": "node --env-file-if-exists=../../.env --env-file-if-exists=../../.env.local dist/src/server.js",
+    "db:migrate:deploy": "node --env-file-if-exists=../../.env --env-file-if-exists=../../.env.local node_modules/prisma/build/index.js migrate deploy",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

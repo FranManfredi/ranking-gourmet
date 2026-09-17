@@ -30,7 +30,7 @@ const options: swaggerJsdoc.Options = {
     },
     servers: [
       {
-        url: 'http://localhost:3000',
+        url: 'http://localhost:8080',
         description: 'Development server',
       },
     ],
@@ -108,5 +108,5 @@ export const setupSwagger = (app: Express) => {
     res.json(specs);
   });
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
-  console.log('Swagger docs available at http://localhost:3000/api-docs');
+  console.log('Swagger docs available at http://localhost:8080/api-docs');
 };
